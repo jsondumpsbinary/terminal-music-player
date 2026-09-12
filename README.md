@@ -26,9 +26,6 @@ Before you begin, ensure you have the following:
    mkdir songs
 Place your .mp3 files inside the songs folder.
 
-🎮 Usage
-Run the application using Node:
-
 ## 🎮 Usage
 
 Run the application using Node:
@@ -47,7 +44,7 @@ node index.js
 
 - Spacebar: Pause / Resume the currently playing song
 
-- Ctrl + C: Stop the music and quit
+- Esc / Ctrl + C: Stop the music and quit
 
 ## 🗂️ Project Structure
 ```bash
