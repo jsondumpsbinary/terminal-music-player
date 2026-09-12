@@ -9,7 +9,7 @@ const songsFolder = path.join(__dirname, 'songs');
 
 let currentAudioProcess = null;
 let selectedIndex = 0;
-let currentlyPlaying = "Nothing";
+let currentlyPlaying = "---";
 let isPaused = false; 
 let isFirstRender = true;
 
