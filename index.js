@@ -40,3 +40,26 @@ function playSong(songIndex) {
   askForSong();
 }
 
+function askForSong() {
+  rl.question('\nEnter a song number to play (or type "exit" to quit): ', (answer) => {
+    if (answer.trim().toLowerCase() === 'exit') {
+      if (currentAudioProcess) {
+        currentAudioProcess.kill();
+      }
+      process.exit(0);
+    }
+
+    const songNumber = parseInt(answer, 10);
+    const songIndex = songNumber - 1;
+
+    if (isNaN(songNumber) || songIndex < 0 || songIndex >= songs.length) {
+      console.log('Invalid number. Try again.');
+      askForSong();
+    } else {
+      playSong(songIndex);
+    }
+  });
+}
+
+askForSong();
+
