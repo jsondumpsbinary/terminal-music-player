@@ -50,7 +50,7 @@ node index.js
 - Ctrl + C: Stop the music and quit
 
 ## 🗂️ Project Structure
-
+```bash
 terminal-player/
 ├── songs/              # Directory for your .mp3 files
 ├── index.js            # Main application logic and UI rendering
