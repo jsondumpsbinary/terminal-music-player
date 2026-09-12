@@ -30,7 +30,8 @@ function renderMenu() {
   
   songs.forEach((song, index) => {
     if (index === selectedIndex) {
-      console.log(`  > ${song}`);
+      // We added ANSI color codes right here!
+      console.log(`  \x1b[36m> ${song}\x1b[0m`);
     } else {
       console.log(`    ${song}`);
     }
@@ -38,7 +39,6 @@ function renderMenu() {
   
   console.log('-----------------------------');
   
-  // If we are paused, add a [PAUSED] tag to the text
   const status = isPaused ? `[PAUSED] ${currentlyPlaying}` : currentlyPlaying;
   console.log(`Now playing: ${status}                                        `);
 }
@@ -52,7 +52,7 @@ function playSong() {
   const songPath = path.join(songsFolder, songName);
   
   currentlyPlaying = songName;
-  isPaused = false; // Always start a new song unpaused
+  isPaused = false; 
   
   currentAudioProcess = spawn('afplay', [songPath]);
   
@@ -78,17 +78,14 @@ function handleEnter() {
 }
 
 function handleSpace() {
-  // If no song has started yet, do nothing
   if (!currentAudioProcess) {
     return;
   }
 
   if (isPaused) {
-    // Unfreeze the process to resume music
     currentAudioProcess.kill('SIGCONT');
     isPaused = false;
   } else {
-    // Freeze the process to pause music
     currentAudioProcess.kill('SIGSTOP');
     isPaused = true;
   }
@@ -104,7 +101,6 @@ function handleQuit() {
   process.exit(0);
 }
 
-// Pass handleSpace as the final argument!
 setupKeyControls(handleUp, handleDown, handleEnter, handleQuit, handleSpace);
 
 renderMenu();
