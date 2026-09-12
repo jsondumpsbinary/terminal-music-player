@@ -1,12 +1,17 @@
 const readline = require('readline');
 
-// We added 'onSpace' as our 5th instruction
 function setupKeyControls(onUp, onDown, onEnter, onQuit, onSpace) {
   readline.emitKeypressEvents(process.stdin);
   process.stdin.setRawMode(true);
 
   process.stdin.on('keypress', (str, key) => {
+    // Quit when the user presses Ctrl + C
     if (key.ctrl && key.name === 'c') {
+      onQuit();
+    }
+    
+    // Quit when the user presses the Escape key
+    if (key.name === 'escape') {
       onQuit();
     }
     
@@ -22,7 +27,6 @@ function setupKeyControls(onUp, onDown, onEnter, onQuit, onSpace) {
       onEnter();
     }
 
-    // Node.js calls the spacebar 'space'
     if (key.name === 'space') {
       onSpace();
     }
