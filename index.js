@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const readline = require('readline');
 const { spawn } = require('child_process');
+const setupKeyControls = require('./keyHandler');
 
 const songsFolder = path.join(__dirname, 'songs');
 const files = fs.readdirSync(songsFolder);
@@ -16,10 +16,10 @@ if (songs.length === 0) {
 let currentAudioProcess = null;
 let selectedIndex = 0;
 let currentlyPlaying = "Nothing";
+let isPaused = false; 
 let isFirstRender = true;
 
 function renderMenu() {
-  // If this is not the first time drawing, move the cursor UP to overwrite the old menu
   if (!isFirstRender) {
     const linesToMoveUp = songs.length + 3;
     process.stdout.write(`\x1B[${linesToMoveUp}A`);
@@ -30,15 +30,17 @@ function renderMenu() {
   
   songs.forEach((song, index) => {
     if (index === selectedIndex) {
-      console.log(`  > ${song}`); // The arrow points to our current selection
+      console.log(`  > ${song}`);
     } else {
       console.log(`    ${song}`);
     }
   });
   
   console.log('-----------------------------');
-  // We add extra spaces at the end to ensure we overwrite any long song names from the previous draw
-  console.log(`Now playing: ${currentlyPlaying}                                        `);
+  
+  // If we are paused, add a [PAUSED] tag to the text
+  const status = isPaused ? `[PAUSED] ${currentlyPlaying}` : currentlyPlaying;
+  console.log(`Now playing: ${status}                                        `);
 }
 
 function playSong() {
@@ -50,45 +52,59 @@ function playSong() {
   const songPath = path.join(songsFolder, songName);
   
   currentlyPlaying = songName;
+  isPaused = false; // Always start a new song unpaused
+  
   currentAudioProcess = spawn('afplay', [songPath]);
   
-  // Redraw the menu immediately so the "Now playing" text updates
   renderMenu();
 }
 
-// Set up Node to translate raw keystrokes into readable key events
-readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+function handleUp() {
+  if (selectedIndex > 0) {
+    selectedIndex--;
+    renderMenu();
+  }
+}
 
-process.stdin.on('keypress', (str, key) => {
-  // If the user presses Ctrl+C, exit safely
-  if (key.ctrl && key.name === 'c') {
-    if (currentAudioProcess) {
-      currentAudioProcess.kill();
-    }
-    // We clear the screen before exiting so the terminal looks clean
-    console.clear();
-    process.exit(0);
+function handleDown() {
+  if (selectedIndex < songs.length - 1) {
+    selectedIndex++;
+    renderMenu();
   }
-  
-  if (key.name === 'up') {
-    if (selectedIndex > 0) {
-      selectedIndex--;
-      renderMenu();
-    }
-  }
-  
-  if (key.name === 'down') {
-    if (selectedIndex < songs.length - 1) {
-      selectedIndex++;
-      renderMenu();
-    }
-  }
-  
-  if (key.name === 'return' || key.name === 'enter') {
-    playSong();
-  }
-});
+}
 
-// Kick off the application by drawing the menu for the first time
+function handleEnter() {
+  playSong();
+}
+
+function handleSpace() {
+  // If no song has started yet, do nothing
+  if (!currentAudioProcess) {
+    return;
+  }
+
+  if (isPaused) {
+    // Unfreeze the process to resume music
+    currentAudioProcess.kill('SIGCONT');
+    isPaused = false;
+  } else {
+    // Freeze the process to pause music
+    currentAudioProcess.kill('SIGSTOP');
+    isPaused = true;
+  }
+  
+  renderMenu();
+}
+
+function handleQuit() {
+  if (currentAudioProcess) {
+    currentAudioProcess.kill();
+  }
+  console.clear();
+  process.exit(0);
+}
+
+// Pass handleSpace as the final argument!
+setupKeyControls(handleUp, handleDown, handleEnter, handleQuit, handleSpace);
+
 renderMenu();
