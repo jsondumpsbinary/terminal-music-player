@@ -1,17 +1,11 @@
-const fs = require('fs');
-const path = require('path');
 const { spawn } = require('child_process');
+const path = require('path');
 const setupKeyControls = require('./keyHandler');
+const loadSongs = require('./songLoader');
 
+// We replaced 10 lines of file-system code with this single line!
+const songs = loadSongs();
 const songsFolder = path.join(__dirname, 'songs');
-const files = fs.readdirSync(songsFolder);
-
-const songs = files.filter(file => file.endsWith('.mp3'));
-
-if (songs.length === 0) {
-  console.log('No mp3 files found in the songs folder.');
-  process.exit(0);
-}
 
 let currentAudioProcess = null;
 let selectedIndex = 0;
@@ -30,7 +24,6 @@ function renderMenu() {
   
   songs.forEach((song, index) => {
     if (index === selectedIndex) {
-      // We added ANSI color codes right here!
       console.log(`  \x1b[36m> ${song}\x1b[0m`);
     } else {
       console.log(`    ${song}`);
