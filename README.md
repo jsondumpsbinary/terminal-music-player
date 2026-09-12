@@ -8,6 +8,7 @@ A sleek, interactive command-line application that plays `.mp3` files directly f
 - **In-Place Rendering**: The menu redraws itself cleanly without flooding the terminal with scrolling text.
 - **Live Updates**: Displays the currently playing song in real-time.
 - **Process Management**: Safely stops background audio processes when switching songs or closing the app.
+- **OS-Level Pause/Resume**: Freezes and unfreezes the audio process using `SIGSTOP` and `SIGCONT` signals.
 
 ## 📋 Prerequisites
 
@@ -23,12 +24,19 @@ Before you begin, ensure you have the following:
 3. Create a folder named `songs` in the root directory:
    ```bash
    mkdir songs
+Place your .mp3 files inside the songs folder.
+
+🎮 Usage
+Run the application using Node:
 
 ## 🎮 Usage
-Run the application using Node:
-node index.js
 
-## Commands
+Run the application using Node:
+
+```bash
+node index.js
+```
+⌨️ Commands
 - Use your keyboard to navigate the application:
 
 - Up Arrow (↑): Move selection up the list
@@ -37,9 +45,12 @@ node index.js
 
 - Enter / Return: Play the highlighted song
 
+- Spacebar: Pause / Resume the currently playing song
+
 - Ctrl + C: Stop the music and quit
 
 ## 🗂️ Project Structure
+
 terminal-player/
 ├── songs/              # Directory for your .mp3 files
 ├── index.js            # Main application logic and UI rendering
