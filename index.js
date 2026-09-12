@@ -13,53 +13,82 @@ if (songs.length === 0) {
   process.exit(0);
 }
 
-console.log('--- Terminal Music Player ---');
-songs.forEach((song, index) => {
-  console.log(`${index + 1}. ${song}`);
-});
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
 let currentAudioProcess = null;
+let selectedIndex = 0;
+let currentlyPlaying = "Nothing";
+let isFirstRender = true;
 
-function playSong(songIndex) {
+function renderMenu() {
+  // If this is not the first time drawing, move the cursor UP to overwrite the old menu
+  if (!isFirstRender) {
+    const linesToMoveUp = songs.length + 3;
+    process.stdout.write(`\x1B[${linesToMoveUp}A`);
+  }
+  isFirstRender = false;
+
+  console.log('--- Terminal Music Player ---');
+  
+  songs.forEach((song, index) => {
+    if (index === selectedIndex) {
+      console.log(`  > ${song}`); // The arrow points to our current selection
+    } else {
+      console.log(`    ${song}`);
+    }
+  });
+  
+  console.log('-----------------------------');
+  // We add extra spaces at the end to ensure we overwrite any long song names from the previous draw
+  console.log(`Now playing: ${currentlyPlaying}                                        `);
+}
+
+function playSong() {
   if (currentAudioProcess) {
     currentAudioProcess.kill();
   }
 
-  const songName = songs[songIndex];
+  const songName = songs[selectedIndex];
   const songPath = path.join(songsFolder, songName);
-
-  console.log(`\nNow playing: ${songName}`);
   
+  currentlyPlaying = songName;
   currentAudioProcess = spawn('afplay', [songPath]);
-
-  askForSong();
+  
+  // Redraw the menu immediately so the "Now playing" text updates
+  renderMenu();
 }
 
-function askForSong() {
-  rl.question('\nEnter a song number to play (or type "exit" to quit): ', (answer) => {
-    if (answer.trim().toLowerCase() === 'exit') {
-      if (currentAudioProcess) {
-        currentAudioProcess.kill();
-      }
-      process.exit(0);
+// Set up Node to translate raw keystrokes into readable key events
+readline.emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
+
+process.stdin.on('keypress', (str, key) => {
+  // If the user presses Ctrl+C, exit safely
+  if (key.ctrl && key.name === 'c') {
+    if (currentAudioProcess) {
+      currentAudioProcess.kill();
     }
-
-    const songNumber = parseInt(answer, 10);
-    const songIndex = songNumber - 1;
-
-    if (isNaN(songNumber) || songIndex < 0 || songIndex >= songs.length) {
-      console.log('Invalid number. Try again.');
-      askForSong();
-    } else {
-      playSong(songIndex);
+    // We clear the screen before exiting so the terminal looks clean
+    console.clear();
+    process.exit(0);
+  }
+  
+  if (key.name === 'up') {
+    if (selectedIndex > 0) {
+      selectedIndex--;
+      renderMenu();
     }
-  });
-}
+  }
+  
+  if (key.name === 'down') {
+    if (selectedIndex < songs.length - 1) {
+      selectedIndex++;
+      renderMenu();
+    }
+  }
+  
+  if (key.name === 'return' || key.name === 'enter') {
+    playSong();
+  }
+});
 
-askForSong();
-
+// Kick off the application by drawing the menu for the first time
+renderMenu();
