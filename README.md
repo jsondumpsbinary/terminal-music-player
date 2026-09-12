@@ -1,29 +1,48 @@
-content = """# Terminal Music Player
+# 🎵 Terminal Music Player
 
-A simple, interactive command-line application built with Node.js that lists and plays `.mp3` files from a local directory.
+A sleek, interactive command-line application that plays `.mp3` files directly from your terminal. Built entirely with Node.js, this project demonstrates how to handle raw terminal input, manage background processes, and build a text-based user interface.
 
-## Features
+## ✨ Features
 
-* **Auto-Discovery:** Automatically scans a local `songs` folder for `.mp3` files.
-* **Interactive Menu:** Displays a numbered list of available songs.
-* **Seamless Switching:** Automatically stops the currently playing song when you select a new one.
-* **Graceful Exit:** Type `exit` to stop the music and close the application safely.
+- **Interactive UI**: Navigate through your music library using arrow keys.
+- **In-Place Rendering**: The menu redraws itself cleanly without flooding the terminal with scrolling text.
+- **Live Updates**: Displays the currently playing song in real-time.
+- **Process Management**: Safely stops background audio processes when switching songs or closing the app.
 
-## Prerequisites
+## 📋 Prerequisites
 
-* **Node.js**: Must be installed on your system.
-* **macOS**: This script currently uses the `afplay` command, which is a built-in audio player exclusive to macOS. *(Note: To run on Linux, change `afplay` to `aplay` or `mpg123`. For Windows, you would need a third-party package or different command).*
+Before you begin, ensure you have the following:
 
-## Setup & Installation
+- **Operating System**: **macOS** is strictly required. This app uses `afplay`, a native audio player built into macOS.
+- **Environment**: [Node.js](https://nodejs.org/) installed on your machine.
 
-1. Clone or download this project to your local machine.
-2. Create a folder named `songs` in the root directory of the project (in the same folder as `index.js`).
-3. Place your `.mp3` audio files inside the `songs` folder.
+## 🚀 Setup & Installation
 
-## How to Run
-
-1. Open your terminal and navigate to the root of this project.
-2. Run the application using Node:
-
+1. Clone this repository or download the source code to your machine.
+2. Open your terminal and navigate to the project directory.
+3. Create a folder named `songs` in the root directory:
    ```bash
-   node index.js
+   mkdir songs
+
+## 🎮 Usage
+Run the application using Node:
+node index.js
+
+## Commands
+- Use your keyboard to navigate the application:
+
+- Up Arrow (↑): Move selection up the list
+
+- Down Arrow (↓): Move selection down the list
+
+- Enter / Return: Play the highlighted song
+
+- Ctrl + C: Stop the music and quit
+
+## 🗂️ Project Structure
+terminal-player/
+├── songs/              # Directory for your .mp3 files
+├── index.js            # Main application logic and UI rendering
+├── keyHandler.js       # Custom module for intercepting raw keyboard inputs
+├── package.json        # Node.js project metadata
+└── README.md           # Project documentation
