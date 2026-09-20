@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 const path = require('path');
-const renderMenu = require('./ui');
+const renderMenu = require('./UserInterface.js');
 
 // 1. We moved all our State variables here!
 let currentAudioProcess = null;
